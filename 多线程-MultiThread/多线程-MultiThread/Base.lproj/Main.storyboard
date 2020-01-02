@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -9,16 +10,126 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ThW-FO-sS6">
+                                <rect key="frame" x="157" y="64" width="100" height="50"/>
+                                <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="afv-lP-YFb"/>
+                                    <constraint firstAttribute="height" constant="50" id="eQG-IT-NoM"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="btnAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SeM-TN-Cgv"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tqV-Jp-fZC">
+                                <rect key="frame" x="157" y="124" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="cWx-KV-K7e"/>
+                                    <constraint firstAttribute="height" constant="50" id="fZy-2V-Qh8"/>
+                                </constraints>
+                                <state key="normal" title="异步并行"/>
+                                <connections>
+                                    <action selector="asyConCurrent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PSq-Oz-acR"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P3O-fq-vGf">
+                                <rect key="frame" x="157" y="184" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="NgY-t8-sKk"/>
+                                    <constraint firstAttribute="height" constant="50" id="wIq-qF-TNS"/>
+                                </constraints>
+                                <state key="normal" title="异步串行"/>
+                                <connections>
+                                    <action selector="asySerial:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eEH-l4-ah7"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eAq-Ig-jby">
+                                <rect key="frame" x="157" y="244" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="2ic-jp-BeS"/>
+                                    <constraint firstAttribute="width" constant="100" id="fZ4-R3-rjB"/>
+                                </constraints>
+                                <state key="normal" title="同步并行"/>
+                                <connections>
+                                    <action selector="syConCurrent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lvf-O7-C2i"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hyM-0N-AFA">
+                                <rect key="frame" x="157" y="304" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="TVK-tn-dmy"/>
+                                    <constraint firstAttribute="height" constant="50" id="nb0-KA-aGE"/>
+                                </constraints>
+                                <state key="normal" title="同步串行"/>
+                                <connections>
+                                    <action selector="sySerial:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xQq-fn-bqx"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jqj-hw-gzT">
+                                <rect key="frame" x="157" y="364" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="i2c-x3-c6L"/>
+                                    <constraint firstAttribute="width" constant="100" id="uCe-Ft-wyU"/>
+                                </constraints>
+                                <state key="normal" title="异步主队列"/>
+                                <connections>
+                                    <action selector="asyMain:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Bm-KA-ddU"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X5e-BP-RnY">
+                                <rect key="frame" x="157" y="424" width="100" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="0Rj-X4-T0U"/>
+                                    <constraint firstAttribute="height" constant="50" id="aTr-Qe-FTk"/>
+                                </constraints>
+                                <state key="normal" title="同步主队列"/>
+                                <connections>
+                                    <action selector="syMain:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jCC-mp-ztU"/>
+                                </connections>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4b1-cp-KcJ">
+                                <rect key="frame" x="157" y="479" width="100" height="100"/>
+                                <color key="backgroundColor" systemColor="systemIndigoColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="ilH-NK-jXx"/>
+                                    <constraint firstAttribute="width" constant="100" id="q0K-0Y-y6l"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="P3O-fq-vGf" firstAttribute="top" secondItem="tqV-Jp-fZC" secondAttribute="bottom" constant="10" id="7lJ-el-dKm"/>
+                            <constraint firstItem="X5e-BP-RnY" firstAttribute="top" secondItem="Jqj-hw-gzT" secondAttribute="bottom" constant="10" id="9YU-1A-Ld5"/>
+                            <constraint firstItem="eAq-Ig-jby" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="CzV-Vx-wc2"/>
+                            <constraint firstItem="P3O-fq-vGf" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="DrS-bp-BV7"/>
+                            <constraint firstItem="hyM-0N-AFA" firstAttribute="top" secondItem="eAq-Ig-jby" secondAttribute="bottom" constant="10" id="KAp-4d-yNX"/>
+                            <constraint firstItem="4b1-cp-KcJ" firstAttribute="top" secondItem="X5e-BP-RnY" secondAttribute="bottom" constant="5" id="LiT-Sr-OjZ"/>
+                            <constraint firstItem="X5e-BP-RnY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="T9i-bg-XBu"/>
+                            <constraint firstItem="4b1-cp-KcJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="UQ3-S0-w55"/>
+                            <constraint firstItem="tqV-Jp-fZC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bAS-Kk-F12"/>
+                            <constraint firstItem="ThW-FO-sS6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="ed4-Hc-7GY"/>
+                            <constraint firstItem="hyM-0N-AFA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fRV-vm-qUM"/>
+                            <constraint firstItem="Jqj-hw-gzT" firstAttribute="top" secondItem="hyM-0N-AFA" secondAttribute="bottom" constant="10" id="j7i-gK-W16"/>
+                            <constraint firstItem="ThW-FO-sS6" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jTd-Dd-4hn"/>
+                            <constraint firstItem="Jqj-hw-gzT" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="moj-3H-3sB"/>
+                            <constraint firstItem="tqV-Jp-fZC" firstAttribute="top" secondItem="ThW-FO-sS6" secondAttribute="bottom" constant="10" id="rnu-hZ-cRs"/>
+                            <constraint firstItem="eAq-Ig-jby" firstAttribute="top" secondItem="P3O-fq-vGf" secondAttribute="bottom" constant="10" id="vHD-n0-Oek"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="imageView" destination="4b1-cp-KcJ" id="9My-YB-Abv"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="-349" y="60"/>
         </scene>
     </scenes>
 </document>
