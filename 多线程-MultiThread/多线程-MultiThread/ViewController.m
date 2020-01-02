@@ -8,6 +8,9 @@
 
 #import "ViewController.h"
 #import <pthread.h>
+#import "KMTool.h"
+#import "KMDownLoadTool.h"
+#import "KMOperation.h"
 
 @interface ViewController ()
 
@@ -21,6 +24,11 @@
 @property (nonatomic, assign) NSInteger totalCount;
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
+
+/** 图片1 */
+@property (nonatomic, strong) UIImage *image1;
+/** 图2 */
+@property (nonatomic, strong) UIImage *image2;
 
 @end
 
@@ -47,7 +55,18 @@
     
 //    [self syncConcurrent];
     
-    [self GCDCommunicate];
+//    [self GCDCommunicate];
+    
+//    [self GCDBarriarDemo];
+    
+//    [self GCDApplyDemo];
+    
+//    [self group3];
+    
+//    [self singleTonTest];
+    
+//    [self invocationOperation];
+    [self blockOperation];
 }
 - (IBAction)asyConCurrent:(id)sender {
     
@@ -439,5 +458,493 @@ void *task(void *param){
         NSLog(@"---once----");
     });
 }
+
+#pragma mark - GCD栅栏函数
+- (void)GCDBarriarDemo{
+    
+    //0.获得全局并发队列
+    //栅栏函数不能使用全局并发队列，如果使用全局并发队列达不到栅栏的效果，不信你试试
+//    dispatch_queue_t queue =  dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_queue_t queue = dispatch_queue_create("download", DISPATCH_QUEUE_CONCURRENT);
+    
+    //1.异步函数
+    dispatch_async(queue, ^{
+       
+        for (NSInteger i = 0; i<2; i++) {
+            NSLog(@"download1-%zd-%@",i,[NSThread currentThread]);
+        }
+        
+    });
+    
+    dispatch_async(queue, ^{
+        
+        for (NSInteger i = 0; i<2; i++) {
+            NSLog(@"download2-%zd-%@",i,[NSThread currentThread]);
+        }
+    });
+    
+    
+    //栅栏函数
+    dispatch_barrier_async(queue, ^{
+       
+        NSLog(@"\n\n+++++++++++++++++++++++++++++\n\n");
+    });
+    
+    dispatch_async(queue, ^{
+        
+        for (NSInteger i = 0; i<2; i++) {
+            NSLog(@"download3-%zd-%@",i,[NSThread currentThread]);
+        }
+    });
+    
+    dispatch_async(queue, ^{
+        
+        for (NSInteger i = 0; i<2; i++) {
+            NSLog(@"download4-%zd-%@",i,[NSThread currentThread]);
+        }
+    });
+}
+
+#pragma mark - GCD 快速迭代
+- (void)GCDApplyDemo{
+    
+    //同步
+//    for (NSInteger i = 0; i<10; i++) {
+//
+//        NSLog(@"%zd---%@",i,[NSThread currentThread]);
+//    }
+    
+    /*
+       第一个参数:遍历的次数
+       第二个参数:队列(并发队列)
+       第三个参数:index 索引
+       */
+    NSMutableArray *array =[NSMutableArray array];
+    dispatch_apply(10, dispatch_get_global_queue(0, 0), ^(size_t index) {
+    
+        [array addObject:@(index)];
+    });
+    NSLog(@"array:%@\n",array);
+}
+
+//使用for循环
+-(void)moveFile
+{
+    //1.拿到文件路径
+    NSString *from = @"自己写...";
+    
+    //2.获得目标文件路径
+    NSString *to = @"自己写...";
+    
+    //3.得到目录下面的所有文件
+    NSArray *subPaths = [[NSFileManager defaultManager] subpathsAtPath:from];
+    
+    NSLog(@"%@",subPaths);
+    //4.遍历所有文件,然后执行剪切操作
+    NSInteger count = subPaths.count;
+    
+    for (NSInteger i = 0; i< count; i++) {
+        
+        //4.1 拼接文件的全路径
+       // NSString *fullPath = [from stringByAppendingString:subPaths[i]];
+        //在拼接的时候会自动添加/
+        NSString *fullPath = [from stringByAppendingPathComponent:subPaths[i]];
+        NSString *toFullPath = [to stringByAppendingPathComponent:subPaths[i]];
+        
+        NSLog(@"%@",fullPath);
+        //4.2 执行剪切操作
+        /*
+         第一个参数:要剪切的文件在哪里
+         第二个参数:文件应该被存到哪个位置
+         */
+        [[NSFileManager defaultManager]moveItemAtPath:fullPath toPath:toFullPath error:nil];
+        
+        NSLog(@"%@---%@--%@",fullPath,toFullPath,[NSThread currentThread]);
+    }
+}
+
+-(void)moveFileWithGCD
+{
+    //1.拿到文件路径
+    NSString *from = @"自己写...";
+    
+    //2.获得目标文件路径
+    NSString *to = @"自己写...";
+    
+    //3.得到目录下面的所有文件
+    NSArray *subPaths = [[NSFileManager defaultManager] subpathsAtPath:from];
+    
+    NSLog(@"%@",subPaths);
+    //4.遍历所有文件,然后执行剪切操作
+    NSInteger count = subPaths.count;
+    
+    dispatch_apply(count, dispatch_get_global_queue(0, 0), ^(size_t i) {
+        //4.1 拼接文件的全路径
+        // NSString *fullPath = [from stringByAppendingString:subPaths[i]];
+        //在拼接的时候会自动添加/
+        NSString *fullPath = [from stringByAppendingPathComponent:subPaths[i]];
+        NSString *toFullPath = [to stringByAppendingPathComponent:subPaths[i]];
+        
+        NSLog(@"%@",fullPath);
+        //4.2 执行剪切操作
+        /*
+         第一个参数:要剪切的文件在哪里
+         第二个参数:文件应该被存到哪个位置
+         */
+        [[NSFileManager defaultManager]moveItemAtPath:fullPath toPath:toFullPath error:nil];
+        
+        NSLog(@"%@---%@--%@",fullPath,toFullPath,[NSThread currentThread]);
+    });
+}
+
+#pragma mark - GCD 队列
+-(void)group1
+{
+    //1.创建队列
+    dispatch_queue_t queue =dispatch_get_global_queue(0, 0);
+    
+    //2.创建队列组
+    dispatch_group_t group = dispatch_group_create();
+    
+    //3.异步函数
+    /*
+     1)封装任务
+     2)把任务添加到队列中
+     dispatch_async(queue, ^{
+     NSLog(@"1----%@",[NSThread currentThread]);
+     });
+     */
+    /*
+     1)封装任务
+     2)把任务添加到队列中
+     3)会监听任务的执行情况,通知group
+     */
+    dispatch_group_async(group, queue, ^{
+        NSLog(@"1----%@",[NSThread currentThread]);
+    });
+    
+    
+    dispatch_group_async(group, queue, ^{
+        NSLog(@"2----%@",[NSThread currentThread]);
+    });
+    
+    dispatch_group_async(group, queue, ^{
+        NSLog(@"3----%@",[NSThread currentThread]);
+    });
+    
+    //拦截通知,当队列组中所有的任务都执行完毕的时候回进入到下面的方法
+    dispatch_group_notify(group, queue, ^{
+        
+        NSLog(@"-------dispatch_group_notify-------");
+    });
+    
+    //    NSLog(@"----end----");
+
+}
+
+-(void)group2
+{
+    //1.创建队列
+    dispatch_queue_t queue =dispatch_get_global_queue(0, 0);
+    
+    //2.创建队列组
+    dispatch_group_t group = dispatch_group_create();
+    
+    //3.在该方法后面的异步任务会被纳入到队列组的监听范围,进入群组
+    //dispatch_group_enter|dispatch_group_leave 必须要配对使用
+    dispatch_group_enter(group);
+    
+    dispatch_async(queue, ^{
+        NSLog(@"1----%@",[NSThread currentThread]);
+        
+        //离开群组
+        dispatch_group_leave(group);
+    });
+    
+    dispatch_group_enter(group);
+    
+    dispatch_async(queue, ^{
+        NSLog(@"2----%@",[NSThread currentThread]);
+    
+        //离开群组
+        dispatch_group_leave(group);
+    });
+    
+    
+    //拦截通知
+    //问题?该方法是阻塞的吗?  内部本身是异步的
+//    dispatch_group_notify(group, queue, ^{
+//        NSLog(@"-------dispatch_group_notify-------");
+//    });
+    
+    //等待.死等. 直到队列组中所有的任务都执行完毕之后才能执行
+    //阻塞的
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    NSLog(@"----end----");
+    
+}
+
+-(void)group3
+{
+    /*
+     1.下载图片1 开子线程
+     2.下载图片2 开子线程
+     3.合成图片并显示图片 开子线程
+     */
+    
+    //-1.获得队列组
+    dispatch_group_t group = dispatch_group_create();
+    
+    //0.获得并发队列
+    dispatch_queue_t queue =  dispatch_get_global_queue(0, 0);
+    
+    // 1.下载图片1 开子线程
+    dispatch_group_async(group, queue,^{
+        
+        NSLog(@"download1---%@",[NSThread currentThread]);
+        //1.1 确定url
+        NSURL *url = [NSURL URLWithString:@"http://www.qbaobei.com/tuku/images/13.jpg"];
+        
+        //1.2 下载二进制数据
+        NSData *imageData = [NSData dataWithContentsOfURL:url];
+        
+        //1.3 转换图片
+        self.image1 = [UIImage imageWithData:imageData];
+    });
+    
+    // 2.下载图片2 开子线程
+     dispatch_group_async(group, queue,^{
+         
+         NSLog(@"download2---%@",[NSThread currentThread]);
+         //2.1 确定url
+        NSURL *url = [NSURL URLWithString:@"http://pic1a.nipic.com/2008-09-19/2008919134941443_2.jpg"];
+        
+        //2.2 下载二进制数据
+        NSData *imageData = [NSData dataWithContentsOfURL:url];
+        
+        //2.3 转换图片
+        self.image2 = [UIImage imageWithData:imageData];
+    });
+
+    //3.合并图片
+    //主线程中执行
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+       
+        NSLog(@"combie---%@",[NSThread currentThread]);
+        //3.1 创建图形上下文
+        UIGraphicsBeginImageContext(CGSizeMake(200, 200));
+        
+        //3.2 画图1
+        [self.image1 drawInRect:CGRectMake(0, 0, 200, 100)];
+        self.image1 = nil;
+        
+        //3.3 画图2
+        [self.image2 drawInRect:CGRectMake(0, 100, 200, 100)];
+        self.image2 = nil;
+        
+        //3.4 根据上下文得到一张图片
+        UIImage *image =  UIGraphicsGetImageFromCurrentImageContext();
+        
+        //3.5 关闭上下文
+        UIGraphicsEndImageContext();
+        
+        //3.6 更新UI
+//        dispatch_async(dispatch_get_main_queue(), ^{
+        
+            NSLog(@"UI----%@",[NSThread currentThread]);
+            self.imageView.image = image;
+//        });
+    });
+    
+//    dispatch_release(group)
+}
+
+#pragma mark - 单例测试
+- (void)singleTonTest{
+    
+    KMTool *t1 = [[KMTool alloc]init];
+    KMTool *t2 = [[KMTool alloc]init];
+    
+    KMTool *t3 = [KMTool new];
+    KMTool *t4 = [KMTool shareTool];
+    
+    KMTool *t5 = [t1 copy];
+    KMTool *t6 = [t1 mutableCopy];
+    
+    NSLog(@"t1:%p t2:%p t3:%p t4:%p t5:%p t6:%p\n",t1,t2,t3,t4,t5,t6);
+    
+    KMDownLoadTool *downLoadTool1 = [KMDownLoadTool shareDownLoadTool];
+    KMDownLoadTool *downLoadTool2 = [KMDownLoadTool new];
+    KMDownLoadTool *downLoadTool3 = [[KMDownLoadTool alloc]init];
+    
+    NSLog(@"downLoadTool1:%p downLoadTool2:%p downLoadTool3:%p\n",downLoadTool1,downLoadTool2,downLoadTool3);
+    
+}
+
+#pragma mark - NSOperation使用
+- (void)invocationOperation{
+    
+    NSInvocationOperation *op1 =[[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download1) object:nil];
+    
+    NSInvocationOperation *op2 =[[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download2) object:nil];
+    
+    NSInvocationOperation *op3 =[[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download3) object:nil];
+    
+    [op1 start];
+    [op2 start];
+    [op3 start];
+}
+
+- (void)blockOperation{
+    
+    NSBlockOperation *op1 =[NSBlockOperation blockOperationWithBlock:^{
+         
+        NSLog(@"1----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op2 =[NSBlockOperation blockOperationWithBlock:^{
+         
+        NSLog(@"2----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op3 =[NSBlockOperation blockOperationWithBlock:^{
+         
+        NSLog(@"3----%@",[NSThread currentThread]);
+    }];
+    
+    [op3 addExecutionBlock:^{
+        
+        NSLog(@"4----%@",[NSThread currentThread]);
+    }];
+    
+    [op3 addExecutionBlock:^{
+        
+        NSLog(@"5----%@",[NSThread currentThread]);
+    }];
+    
+    [op3 addExecutionBlock:^{
+        
+        NSLog(@"6----%@",[NSThread currentThread]);
+    }];
+    
+    /*
+     同一个的operation的block顺序部分先后，operation顺序执行
+     
+     //追加任务
+     //注意:如果一个操作中的任务数量大于1,那么会开子线程并发执行任务
+     //注意:不一定是子线程,有可能是主线程
+     */
+
+    [op1 start];
+    [op2 start];
+    [op3 start];
+}
+
+-(void)download1
+{
+    NSLog(@"%s----%@",__func__,[NSThread currentThread]);
+}
+
+-(void)download2
+{
+    NSLog(@"%s----%@",__func__,[NSThread currentThread]);
+}
+
+
+-(void)download3
+{
+    NSLog(@"%s----%@",__func__,[NSThread currentThread]);
+}
+
+#pragma mark - NSOperationQueue使用
+-(void)invocationOperationWithQueue
+{
+    //1.创建操作,封装任务
+    /*
+     第一个参数:目标对象 self
+     第二个参数:调用方法的名称
+     第三个参数:前面方法需要接受的参数 nil
+     */
+    NSInvocationOperation *op1 = [[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download1) object:nil];
+    NSInvocationOperation *op2 = [[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download2) object:nil];
+    NSInvocationOperation *op3 = [[NSInvocationOperation alloc]initWithTarget:self selector:@selector(download3) object:nil];
+    
+    //2.创建队列
+    /*
+     GCD:
+     串行类型:create & 主队列
+     并发类型:create & 全局并发队列
+     NSOperation:
+     主队列:   [NSOperationQueue mainQueue] 和GCD中的主队列一样,串行队列
+     非主队列: [[NSOperationQueue alloc]init]  非常特殊(同时具备并发和串行的功能)
+     //默认情况下,非主队列是并发队列
+     */
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    
+    //3.添加操作到队列中
+    [queue addOperation:op1];   //内部已经调用了[op1 start]
+    [queue addOperation:op2];
+    [queue addOperation:op3];
+}
+
+-(void)blockOperationWithQueue
+{
+    //1.创建操作
+    NSBlockOperation *op1 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"1----%@",[NSThread currentThread]);
+       
+    }];
+    
+    NSBlockOperation *op2 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"2----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op3 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"3----%@",[NSThread currentThread]);
+    }];
+    
+    //追加任务
+    [op2 addExecutionBlock:^{
+        NSLog(@"4----%@",[NSThread currentThread]);
+    }];
+    
+    [op2 addExecutionBlock:^{
+        NSLog(@"5----%@",[NSThread currentThread]);
+    }];
+    
+    [op2 addExecutionBlock:^{
+        NSLog(@"6----%@",[NSThread currentThread]);
+    }];
+    
+    //2.创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    
+    //3.添加操作到队列
+    [queue addOperation:op1];
+    [queue addOperation:op2];
+    [queue addOperation:op3];
+    
+    //简便方法
+    //1)创建操作,2)添加操作到队列中
+    [queue addOperationWithBlock:^{
+        NSLog(@"7----%@",[NSThread currentThread]);
+    }];
+}
+
+-(void)customWithQueue
+{
+    //1.封装操作
+    KMOperation *op1 = [[KMOperation alloc]init];
+    KMOperation *op2 = [[KMOperation alloc]init];
+    
+    //2.创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    
+    //3.添加操作到队列
+    [queue addOperation:op1];
+    [queue addOperation:op2];
+    
+}
+
 
 @end

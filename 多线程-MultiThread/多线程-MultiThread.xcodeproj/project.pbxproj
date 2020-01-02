@@ -14,6 +14,9 @@
 		9C5B2B8623BB6A510000C494 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C5B2B8523BB6A510000C494 /* Assets.xcassets */; };
 		9C5B2B8923BB6A510000C494 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C5B2B8723BB6A510000C494 /* LaunchScreen.storyboard */; };
 		9C5B2B8C23BB6A510000C494 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5B2B8B23BB6A510000C494 /* main.m */; };
+		9CF13A8223BDD95100C4AF29 /* KMTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF13A8123BDD95100C4AF29 /* KMTool.m */; };
+		9CF13A8623BDFCD900C4AF29 /* KMDownLoadTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF13A8523BDFCD900C4AF29 /* KMDownLoadTool.m */; };
+		9CF13A8923BE07B200C4AF29 /* KMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF13A8823BE07B200C4AF29 /* KMOperation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +32,13 @@
 		9C5B2B8823BB6A510000C494 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9C5B2B8A23BB6A510000C494 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C5B2B8B23BB6A510000C494 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9CF13A8023BDD95100C4AF29 /* KMTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KMTool.h; sourceTree = "<group>"; };
+		9CF13A8123BDD95100C4AF29 /* KMTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KMTool.m; sourceTree = "<group>"; };
+		9CF13A8323BDFC6B00C4AF29 /* Single.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Single.h; sourceTree = "<group>"; };
+		9CF13A8423BDFCD900C4AF29 /* KMDownLoadTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KMDownLoadTool.h; sourceTree = "<group>"; };
+		9CF13A8523BDFCD900C4AF29 /* KMDownLoadTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KMDownLoadTool.m; sourceTree = "<group>"; };
+		9CF13A8723BE07B200C4AF29 /* KMOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KMOperation.h; sourceTree = "<group>"; };
+		9CF13A8823BE07B200C4AF29 /* KMOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KMOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +82,13 @@
 				9C5B2B8723BB6A510000C494 /* LaunchScreen.storyboard */,
 				9C5B2B8A23BB6A510000C494 /* Info.plist */,
 				9C5B2B8B23BB6A510000C494 /* main.m */,
+				9CF13A8023BDD95100C4AF29 /* KMTool.h */,
+				9CF13A8123BDD95100C4AF29 /* KMTool.m */,
+				9CF13A8323BDFC6B00C4AF29 /* Single.h */,
+				9CF13A8423BDFCD900C4AF29 /* KMDownLoadTool.h */,
+				9CF13A8523BDFCD900C4AF29 /* KMDownLoadTool.m */,
+				9CF13A8723BE07B200C4AF29 /* KMOperation.h */,
+				9CF13A8823BE07B200C4AF29 /* KMOperation.m */,
 			);
 			path = "多线程-MultiThread";
 			sourceTree = "<group>";
@@ -147,7 +164,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C5B2B8123BB6A4E0000C494 /* ViewController.m in Sources */,
+				9CF13A8223BDD95100C4AF29 /* KMTool.m in Sources */,
 				9C5B2B7B23BB6A4E0000C494 /* AppDelegate.m in Sources */,
+				9CF13A8623BDFCD900C4AF29 /* KMDownLoadTool.m in Sources */,
+				9CF13A8923BE07B200C4AF29 /* KMOperation.m in Sources */,
 				9C5B2B8C23BB6A510000C494 /* main.m in Sources */,
 				9C5B2B7E23BB6A4E0000C494 /* SceneDelegate.m in Sources */,
 			);
