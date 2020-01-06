@@ -11,6 +11,8 @@
 #import "KMTool.h"
 #import "KMDownLoadTool.h"
 #import "KMOperation.h"
+#import "KMBlockOperation.h"
+#import "KMThread.h"
 
 @interface ViewController ()
 
@@ -29,6 +31,8 @@
 @property (nonatomic, strong) UIImage *image1;
 /** 图2 */
 @property (nonatomic, strong) UIImage *image2;
+
+@property (nonatomic, strong) NSOperationQueue *queue;
 
 @end
 
@@ -66,7 +70,15 @@
 //    [self singleTonTest];
     
 //    [self invocationOperation];
-    [self blockOperation];
+//    [self blockOperation];
+    
+//    [self queueTest2];
+    
+//    [self operationDepandencyAction];
+    
+//    [self downLoadToMainQueue];
+    
+    [self operationSuppleymentAction];
 }
 - (IBAction)asyConCurrent:(id)sender {
     
@@ -946,5 +958,304 @@ void *task(void *param){
     
 }
 
+#pragma mark - NSOperationQueue其它用法
+- (void)startAction{
+    
+//    1 创建队列，默认是并发队列
+    self.queue =[[NSOperationQueue alloc]init];
+    
+//    2 设置最大并发数量
+    self.queue.maxConcurrentOperationCount = 1;
+    
+    KMOperation *op1 = [[KMOperation alloc]init];
+    
+    [self.queue addOperation:op1];
+}
+
+- (void)suspendAction{
+    
+    //暂停,是可以恢复
+    /*
+     队列中的任务也是有状态的:已经执行完毕的 | 正在执行 | 排队等待状态
+     */
+    //不能暂停当前正在处于执行状态的任务
+    [self.queue setSuspended:YES];
+}
+
+- (void)goonAction{
+    
+//    k继续进行
+    [self.queue setSuspended:NO];
+}
+
+- (void)cancelAction{
+    
+//    取消，不可以恢复，该方法内部调用了所有操作的cancel方法
+    [self.queue cancelAllOperations];
+}
+
+-(void)queueTest
+{
+    //1.创建队列
+    //默认是并发队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    
+    //2.设置最大并发数量 maxConcurrentOperationCount
+    //同一时间最多有多少个任务可以执行
+    //串行执行任务!=只开一条线程 (线程同步)
+    // maxConcurrentOperationCount >1 那么就是并发队列
+    // maxConcurrentOperationCount == 1 那就是串行队列
+    // maxConcurrentOperationCount == 0  不会执行任务
+    // maxConcurrentOperationCount == -1 特殊意义 最大值 表示不受限制
+    queue.maxConcurrentOperationCount = 1;
+    
+    //3.封装操作
+    NSBlockOperation *op1 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"1----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op2 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"2----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op3 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"3----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op4 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"4----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op5 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"5----%@",[NSThread currentThread]);
+    }];
+    NSBlockOperation *op6 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"6----%@",[NSThread currentThread]);
+    }];
+    NSBlockOperation *op7 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"7----%@",[NSThread currentThread]);
+    }];
+    
+    //4.添加到队列
+    [queue addOperation:op1];
+    [queue addOperation:op2];
+    [queue addOperation:op3];
+    [queue addOperation:op4];
+    [queue addOperation:op5];
+    [queue addOperation:op6];
+    [queue addOperation:op7];
+}
+
+-(void)queueTest2
+{
+    //1.创建队列
+    //默认是并发队列
+    self.queue = [[NSOperationQueue alloc]init];
+    
+    //2.设置最大并发数量 maxConcurrentOperationCount
+    //同一时间最多有多少个任务可以执行
+    //串行执行任务!=只开一条线程 (线程同步)
+    // maxConcurrentOperationCount >1 那么就是并发队列
+    // maxConcurrentOperationCount == 1 那就是串行队列
+    // maxConcurrentOperationCount == 0  不会执行任务
+    // maxConcurrentOperationCount == -1 特殊意义 最大值 表示不受限制
+    self.queue.maxConcurrentOperationCount = 1;
+    
+    //3.封装操作
+    NSBlockOperation *op1 = [NSBlockOperation blockOperationWithBlock:^{
+        for (NSInteger i = 0; i<10; i++) {
+            NSLog(@"1-%zd---%@",i,[NSThread currentThread]);
+        }
+    }];
+    
+    NSBlockOperation *op2 = [NSBlockOperation blockOperationWithBlock:^{
+        for (NSInteger i = 0; i<10; i++) {
+            NSLog(@"2-%zd---%@",i,[NSThread currentThread]);
+        }
+    }];
+    
+    NSBlockOperation *op3 = [NSBlockOperation blockOperationWithBlock:^{
+        for (NSInteger i = 0; i<10; i++) {
+            NSLog(@"3-%zd---%@",i,[NSThread currentThread]);
+        }
+    }];
+    
+    NSBlockOperation *op4 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"4----%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op5 = [NSBlockOperation blockOperationWithBlock:^{
+        for (NSInteger i = 0; i<1000; i++) {
+            NSLog(@"5-%zd---%@",i,[NSThread currentThread]);
+        }
+    }];
+    NSBlockOperation *op6 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"6----%@",[NSThread currentThread]);
+    }];
+    NSBlockOperation *op7 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"7----%@",[NSThread currentThread]);
+    }];
+    
+    //4.添加到队列
+    [self.queue addOperation:op1];
+    [self.queue addOperation:op2];
+    [self.queue addOperation:op3];
+    [self.queue addOperation:op4];
+    [self.queue addOperation:op5];
+    [self.queue addOperation:op6];
+    [self.queue addOperation:op7];
+}
+
+#pragma mark - NSOperation相互依懒
+- (void)operationDepandencyAction{
+    
+    //1.创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    NSOperationQueue *queue2 = [[NSOperationQueue alloc]init];
+    
+    //2.封装操作
+    NSBlockOperation *op1 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"1---%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op2 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"2---%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op3 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"3---%@",[NSThread currentThread]);
+    }];
+    
+    NSBlockOperation *op4 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"4---%@",[NSThread currentThread]);
+    }];
+    
+    //操作监听
+    op3.completionBlock = ^{
+        NSLog(@"++++客官,来看我吧------%@",[NSThread currentThread]);
+    };
+    
+    //添加操作依赖
+    //注意点:不能循环依赖
+    //可以跨队列依赖
+    [op1 addDependency:op4];
+//    [op4 addDependency:op1];
+    
+    [op2 addDependency:op3];
+    
+    //添加操作到队列
+    [queue addOperation:op1];
+    [queue addOperation:op2];
+    [queue addOperation:op3];
+    [queue2 addOperation:op4];
+}
+
+#pragma mark - NSOperation实现线程间通信
+- (void)downLoadToMainQueue{
+    
+//    1 创建队列
+    NSOperationQueue *queue =[NSOperationQueue new];
+    
+//    2 下载操作
+    NSBlockOperation *downLoad = [NSBlockOperation blockOperationWithBlock:^{
+        
+        NSURL *url =[NSURL URLWithString:@"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1578043272691&di=69575f9a68c0e419539007d889321455&imgtype=0&src=http%3A%2F%2Fd-pic-image.yesky.com%2F740x-%2FuploadImages%2F2019%2F063%2F17%2FW439CK9H6693.jpg"];
+        
+        NSData *data =[NSData dataWithContentsOfURL:url];
+        UIImage *image = [UIImage imageWithData:data];
+        
+//        3 回到主队列显示图片
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            
+            self.imageView.image = image;
+        }];
+    }];
+    
+//    将d操作添加到队列
+    [queue addOperation:downLoad];
+    
+    [self performSelector:@selector(combineTwoPic) withObject:nil afterDelay:2];
+}
+
+- (void)combineTwoPic{
+    
+    NSOperationQueue *queue =[NSOperationQueue new];
+    
+    __block UIImage *image1 = nil;
+    __block UIImage *image2 = nil;
+    
+    NSBlockOperation *downLoad1 =[NSBlockOperation blockOperationWithBlock:^{
+        
+        NSURL *url =[NSURL URLWithString:@"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1578043272691&di=69575f9a68c0e419539007d889321455&imgtype=0&src=http%3A%2F%2Fd-pic-image.yesky.com%2F740x-%2FuploadImages%2F2019%2F063%2F17%2FW439CK9H6693.jpg"];
+        
+        NSData *data =[NSData dataWithContentsOfURL:url];
+        image1 = [UIImage imageWithData:data];
+               
+        NSLog(@"PIC-1 DownLoad Done \n");
+    }];
+    
+    NSBlockOperation *downLoad2 =[NSBlockOperation blockOperationWithBlock:^{
+           
+        NSURL *url =[NSURL URLWithString:@"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1578043341321&di=0e04f5e6236d2e172a6d861398c072f6&imgtype=jpg&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D2120507058%2C3738678370%26fm%3D214%26gp%3D0.jpg"];
+           
+        NSData *data =[NSData dataWithContentsOfURL:url];
+        image2 = [UIImage imageWithData:data];
+        
+        NSLog(@"PIC-2 DownLoad Done \n");
+    }];
+    
+    NSBlockOperation *combine =[NSBlockOperation blockOperationWithBlock:^{
+        
+        //4.1 开上下文
+       UIGraphicsBeginImageContext(CGSizeMake(200, 200));
+       
+       //4.2 画图1
+       [image1 drawInRect:CGRectMake(0, 0, 100, 200)];
+       
+       //4.3 画图2
+       [image2 drawInRect:CGRectMake(100, 0, 100, 200)];
+       
+       //4.4 根据上下文得到图片
+       UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+       
+       //4.5 关闭上下文
+       UIGraphicsEndImageContext();
+       
+       //7.更新UI
+       [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+           
+           self.imageView.image = image;
+           NSLog(@"UI----%@",[NSThread currentThread]);
+           
+       }];
+    }];
+    
+    [combine addDependency:downLoad1];
+    [combine addDependency:downLoad2];
+    
+    [queue addOperation:downLoad1];
+    [queue addOperation:downLoad2];
+    [queue addOperation:combine];
+}
+
+#pragma mark - NSOperation补充
+- (void)operationSuppleymentAction{
+    
+    KMThread *thread = [KMThread new];
+    [thread start];
+    
+    NSLog(@"\n\n");
+    
+    NSOperationQueue *queue =[NSOperationQueue new];
+    
+    KMBlockOperation *blockOp =[KMBlockOperation blockOperationWithBlock:^{
+        
+        NSLog(@"1---%@",[NSThread currentThread]);
+        
+    }];;
+    
+    [queue addOperation:blockOp];
+    
+}
 
 @end
